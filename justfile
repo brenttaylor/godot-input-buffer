@@ -108,3 +108,32 @@ play project godot_platform:
 
 @play-mono:
   just play {{mono_project}} {{godot_mono}}
+
+@build release:
+  #!{{shebang}}
+  $buildDir = "$($PWD)/build/BufferedInput_{{release}}_for_Godot_{{godot_release}}"
+
+  if (Test-Path $PWD/build -PathType Container) {
+    rm -rf $PWD/build 
+  }
+  if (Test-Path $PWD/release -PathType Container) {
+    rm -rf $PWD/release
+  }
+  New-Item $PWD/release -ItemType Directory | Out-Null
+  New-Item $PWD/build -ItemType Directory | Out-Null
+  New-Item $PWD/build/web -ItemType Directory | Out-Null
+  New-Item $buildDir -ItemType Directory | Out-Null
+  New-Item $buildDir/BufferedInput -ItemType Directory | Out-Null
+  
+  # Build the web export for Itch
+  ./bin/Godot_v{{godot_release}}_{{godot_gdscript}}/Godot_v{{godot_release}}_{{godot_gdscript}} --headless --path {{gdscript_project}} --export-release itchio $PWD/build/web/index.html
+  Compress-Archive -Path $PWD/build/web/* -DestinationPath $PWD/release/itch_web_BufferedInput_{{release}}_for_Godot_{{godot_release}}.zip
+
+  # Build release
+  cp $PWD/LICENSE $buildDir/LICENSE
+  cp $PWD/README.md $buildDir/README.md
+  cp $PWD/{{gdscript_project}}/buffered_input/buffered_input.gd $buildDir/BufferedInput/buffered_input.gd
+  cp $PWD/{{mono_project}}/buffered_input/BufferedInput.cs $buildDir/BufferedInput/BufferedInput.cs
+  Compress-Archive -LiteralPath $buildDir -DestinationPath $PWD/release/BufferedInput_{{release}}_for_Godot_{{godot_release}}.zip
+
+  rm -rf $PWD/build

@@ -19,3 +19,7 @@ bin/Godot*
 
 # VS Code stuff
 .vscode/
+
+# build stuff
+build/
+release/
