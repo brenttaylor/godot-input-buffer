@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://c2qmy30kugdyg"]
+
+[ext_resource type="Script" path="res://demo/AudioBus/audio_bus.gd" id="1_dshwe"]
+[ext_resource type="AudioStream" uid="uid://24hpl5tj4w3u" path="res://demo/assets/SFX/footstep_grass_001.ogg" id="1_yuq57"]
+[ext_resource type="AudioStream" uid="uid://bveh08v0plhjh" path="res://demo/assets/SFX/click_003.ogg" id="3_y3iht"]
+[ext_resource type="AudioStream" uid="uid://b5nmkm57elsmo" path="res://demo/assets/SFX/SFX_Jump_22.wav" id="4_n2jlq"]
+[ext_resource type="AudioStream" uid="uid://bhn7mu3q7upvm" path="res://demo/assets/Music/Juhani Junkala [Chiptune Adventures] 1. Stage 1.ogg" id="5_lf2u5"]
+
+[node name="AudioBus" type="Node"]
+script = ExtResource("1_dshwe")
+
+[node name="PlayerCollision" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("1_yuq57")
+max_polyphony = 8
+
+[node name="UIClick" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_y3iht")
+max_polyphony = 8
+bus = &"SFX"
+
+[node name="PlayerJump" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_n2jlq")
+max_polyphony = 8
+
+[node name="BackgroundMusic" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_lf2u5")
+volume_db = -6.368
+autoplay = true
+bus = &"Music"

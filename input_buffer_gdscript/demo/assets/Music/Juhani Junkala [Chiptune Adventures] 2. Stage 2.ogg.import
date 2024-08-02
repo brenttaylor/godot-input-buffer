@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c0q6dn3onad27"
+path="res://.godot/imported/Juhani Junkala [Chiptune Adventures] 2. Stage 2.ogg-9fa90251cb12ec72410c1356f5b9edee.oggvorbisstr"
+
+[deps]
+
+source_file="res://demo/assets/Music/Juhani Junkala [Chiptune Adventures] 2. Stage 2.ogg"
+dest_files=["res://.godot/imported/Juhani Junkala [Chiptune Adventures] 2. Stage 2.ogg-9fa90251cb12ec72410c1356f5b9edee.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

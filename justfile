@@ -15,17 +15,23 @@ set windows-shell := ["pwsh.exe", "-c"]
 
 # Settings for Godot itself
 godot_release := "4.2.2-stable"
-godot_platform := if os() == 'windows' {
+godot_mono := if os() == 'windows' {
   "mono_win64"
 } else {
   "mono_linux_x86_64"
+}
+godot_gdscript := if os() == 'windows' {
+  "win64"
+} else {
+  "linux.x86_64"
 }
 mono_project := "input_buffer_mono"
 gdscript_project := "input_buffer_gdscript"
 
 init:
   #!{{shebang}}
-  just download-godot
+  just download-godot "{{godot_mono}}"
+  just download-godot "{{godot_gdscript}}"
 
 
 serve-docs:
@@ -34,7 +40,7 @@ serve-docs:
   pipenv run mkdocs serve
   cd -
 
-download-godot:
+download-godot godot_platform:
   #!{{shebang}}
 
   # Download the file
@@ -51,22 +57,29 @@ download-godot:
     New-Item .\bin -ItemType Directory | Out-Null
   }
   
-  Expand-Archive $PWD\$($fileName) -DestinationPath $PWD\bin;
+  New-Item .\tmp -ItemType Directory | Out-Null
+  Expand-Archive $PWD\$($fileName) -DestinationPath $PWD\tmp;
   Remove-Item $fileName;
   if (-Not (Test-Path $destFolder -PathType Container)) {
     New-Item $destFolder -ItemType Directory | Out-Null
     if ($IsWindows) {
-      Move-Item ".\bin\Godot*.exe" "$($destFolder)\"
+      Move-Item ".\tmp\Godot*.exe" "$($destFolder)\"
     }
     else {
-      Move-Item ".\bin\Godot_v{{godot_release}}_{{godot_platform}}" "$($destFolder)\"
+      if (Test-Path ".\tmp\Godot_v{{godot_release}}_{{godot_platform}}" -PathType Leaf) {
+        Move-Item ".\tmp\Godot_v{{godot_release}}_{{godot_platform}}" "$($destFolder)\"
+      } else {
+        Move-Item ".\tmp\Godot_v{{godot_release}}_{{godot_platform}}\*" "$($destFolder)\" 
+      }
     }
   }
-  if ($IsLinux) {
-    Move-Item "$($destFolder)\Godot_v*" "$($destFolder)\Godot_v{{godot_release}}_{{godot_platform}}"
-  }
+  #if ($IsLinux) {
+  #  Move-Item "$($destFolder)\Godot_v*" "$($destFolder)\Godot_v{{godot_release}}_{{godot_platform}}"
+  #}
 
-open project:
+  Remove-Item $PWD\tmp -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
+
+open project godot_platform:
   #!{{shebang}}
 
   if ($IsWindows) {
@@ -76,12 +89,12 @@ open project:
   }
 
 @open-mono:
-  just open {{mono_project}}
+  just open {{mono_project}} {{godot_mono}}
 
 @open-gdscript:
-  just open {{gdscript_project}}
+  just open {{gdscript_project}} {{godot_gdscript}}
 
-play project:
+play project godot_platform:
   #!{{shebang}}
 
   if ($IsWindows) {
@@ -91,7 +104,7 @@ play project:
   }
 
 @play-gdscript:
-  just play {{gdscript_project}}
+  just play {{gdscript_project}} {{godot_gdscript}}
 
 @play-mono:
-  just play {{mono_project}}
+  just play {{mono_project}} {{godot_mono}}
