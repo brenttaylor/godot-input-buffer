@@ -73,19 +73,18 @@ download-godot godot_platform:
       }
     }
   }
-  #if ($IsLinux) {
-  #  Move-Item "$($destFolder)\Godot_v*" "$($destFolder)\Godot_v{{godot_release}}_{{godot_platform}}"
-  #}
 
   Remove-Item $PWD\tmp -Force -Recurse -ErrorAction SilentlyContinue | Out-Null
 
 open project godot_platform:
   #!{{shebang}}
+  $gdDir = "$($PWD)/bin/Godot_v{{godot_release}}_{{godot_platform}}/"
+  $gdBin = (get-childitem $gdDir/Godot_v{{godot_release}}*)[0] | select -expand FullName
 
   if ($IsWindows) {
-    start-process "$($PWD)\bin\Godot_v{{godot_release}}_{{godot_platform}}\Godot_v{{godot_release}}_{{godot_platform}}.exe" -NoNewWindow -UseNewEnvironment -ArgumentList "--editor", "--path", "{{project}}" 2>&1 | Out-Null
+    start-process "$($gdDir)\Godot_v{{godot_release}}_{{godot_platform}}.exe" -NoNewWindow -UseNewEnvironment -ArgumentList "--editor", "--path", "{{project}}" 2>&1 | Out-Null
   } else {
-    start-process "$($PWD)/bin/Godot_v{{godot_release}}_{{godot_platform}}/Godot_v{{godot_release}}_{{godot_platform}}" -NoNewWindow -ArgumentList "--editor", "--path", "{{project}}" 2>&1 | Out-Null
+    start-process $gdBin -NoNewWindow -ArgumentList "--editor", "--path", "{{project}}" 2>&1 | Out-Null
   }
 
 @open-mono:
@@ -96,11 +95,13 @@ open project godot_platform:
 
 play project godot_platform:
   #!{{shebang}}
-
+  $gdDir = "$($PWD)/bin/Godot_v{{godot_release}}_{{godot_platform}}/"
+  $gdBin = (get-childitem $gdDir/Godot_v{{godot_release}}*)[0] | select -expand Name
+  
   if ($IsWindows) {
-    start-process "$($PWD)\bin\Godot_v{{godot_release}}_{{godot_platform}}\Godot_v{{godot_release}}_{{godot_platform}}.exe" -NoNewWindow -UseNewEnvironment -ArgumentList "--path", "{{project}}" 2>&1 | Out-Null
+    start-process "$($gdDir)\Godot_v{{godot_release}}_{{godot_platform}}.exe" -NoNewWindow -UseNewEnvironment -ArgumentList "--path", "{{project}}" 2>&1 | Out-Null
   } else {
-    start-process "$($PWD)/bin/Godot_v{{godot_release}}_{{godot_platform}}/Godot_v{{godot_release}}_{{godot_platform}}" -NoNewWindow -ArgumentList "--path", "{{project}}" 2>&1 | Out-Null
+    start-process $gdDir/$gdBin -NoNewWindow -ArgumentList "--path", "{{project}}" 2>&1 | Out-Null
   }
 
 @play-gdscript:
@@ -111,6 +112,8 @@ play project godot_platform:
 
 @build release:
   #!{{shebang}}
+  $gdDir = "$($PWD)/bin/Godot_v{{godot_release}}_{{godot_gdscript}}/"
+  $gdBin = (get-childitem $gdDir/Godot_v{{godot_release}}*)[0] | select -expand Name 
   $buildDir = "$($PWD)/build/BufferedInput_{{release}}_for_Godot_{{godot_release}}"
 
   if (Test-Path $PWD/build -PathType Container) {
@@ -126,7 +129,7 @@ play project godot_platform:
   New-Item $buildDir/BufferedInput -ItemType Directory | Out-Null
   
   # Build the web export for Itch
-  ./bin/Godot_v{{godot_release}}_{{godot_gdscript}}/Godot_v{{godot_release}}_{{godot_gdscript}} --headless --path {{gdscript_project}} --export-release itchio $PWD/build/web/index.html
+  .$gdDir/$gdBin --headless --path {{gdscript_project}} --export-release itchio $PWD/build/web/index.html
   Compress-Archive -Path $PWD/build/web/* -DestinationPath $PWD/release/itch_web_BufferedInput_{{release}}_for_Godot_{{godot_release}}.zip
 
   # Build release
