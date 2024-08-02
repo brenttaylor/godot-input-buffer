@@ -1,0 +1,5 @@
+site_name: New Project
+nav:
+  - Home: index.md
+  - Design Doc: design_doc.md
+theme: readthedocs
