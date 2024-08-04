@@ -27,7 +27,7 @@ class InputEventTimestamps:
 		if can_add_timestamp(event):
 			_timestamps[get_key(event)] = Time.get_ticks_msec()
 	
-	func is_event_buffered(event: InputEvent, buffer) -> bool:
+	func is_event_buffered(event: InputEvent, buffer: int) -> bool:
 		var key: Variant = get_key(event)
 		if _timestamps.has(key):
 			var delta: float = Time.get_ticks_msec() - _timestamps[key]
@@ -73,4 +73,4 @@ func is_action_just_pressed(action: String, buffer: int = -1) -> bool:
 			"InputEventKey":          results.append(_inputEventKeyTimestamps.is_event_buffered(event, bwindow))
 			"InputEventMouseButton":  results.append(_inputEventMouseButtonTimestamps.is_event_buffered(event, bwindow))
 			"InputEventJoypadButton": results.append(_inputEventJoypadButtonTimestamps.is_event_buffered(event, bwindow))
-	return results.any(func(result): return result)
+	return results.any(func(result: bool) -> bool: return result)

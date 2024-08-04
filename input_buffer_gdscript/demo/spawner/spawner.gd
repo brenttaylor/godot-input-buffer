@@ -6,7 +6,7 @@ extends Marker2D
 
 @onready var _spawn_timer: Timer = $SpawnTimer
 
-func _ready():
+func _ready() -> void:
 	set_timer()
 
 func set_timer() -> void:
@@ -14,7 +14,7 @@ func set_timer() -> void:
 	_spawn_timer.start()
 
 func on_spawn_timer_timeout() -> void:
-	var new_enemy = enemy.instantiate()
+	var new_enemy: Node2D = enemy.instantiate()
 	add_child(new_enemy)
 	new_enemy.global_position = global_position
 	set_timer()
